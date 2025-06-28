@@ -20,7 +20,7 @@ for file_name in os.listdir(cwd):
     if os.path.isfile(filepath) and not file_name.startswith('.') :
 
         ext = file_name.split('.') # Split the string at the periods, & grab the final one
-
+        
         if len(ext) == 1 and not file_name.startswith('.'): # Just don't handle a LICENSE file at this moment
             continue
 
@@ -33,6 +33,9 @@ for file_name in os.listdir(cwd):
             files[ext].append(file_name)
         except KeyError:
             files.update({ext: [file_name]})
+
+
+print(files)
 
 # # make the new directories
 for extension in extensions:
