@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 import shutil
-
+from tabulate import tabulate
 
 subdirs = []    # Array of all the names of the current subdirectories
 extensions = [] # Array to store all of the file extensions
@@ -21,18 +21,29 @@ for file_name in os.listdir(cwd):
 
         ext = file_name.split('.') # Split the string at the periods, & grab the final one
 
-        if len(ext) == 1 and not file_name.startswith('.'): # Just don't handle a LICENSE file at this moment
+        if len(ext) == 1 and not file_name.startswith('.'): # Just don't handle this at the moment
             continue
 
         ext = ext[-1]
 
-        extensions.append(ext)
+        if ext not in extensions:
+            extensions.append(ext)
         
         try:
-            print(file_name)
             files[ext].append(file_name)
         except KeyError:
             files.update({ext: [file_name]})
+
+print("Files to organize into subdirectories:")
+print(tabulate(files, headers=extensions,  tablefmt='orgtbl'))
+
+key = input("Press Enter to confirm process, any other key to cancel\t")
+
+if key != '':
+    print("Exiting...")
+    print()
+    os._exit(0)
+
 
 # # make the new directories
 for extension in extensions:
@@ -41,4 +52,8 @@ for extension in extensions:
 
     for file_name in files[extension]:
         filepath = os.path.join(cwd, file_name)
-        shutil.copy(filepath, os.path.join(cwd, extension)) # Just copy things over for now
+        try:
+            shutil.copy(filepath, os.path.join(cwd, extension)) # Just copy things over for now
+        except FileExistsError:
+            # Handle the case when the file already exists - Remove or append # to file name?
+            continue
