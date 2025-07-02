@@ -1,15 +1,20 @@
+"""
+
+This script organizes files from a working directory into subdirectories based on the
+file extensions of the files. 
+
+I built this to refresh and substantialize my Python experience, as over the years it has
+been a spotty, informal, and inconsistent education
+
+Author: VerdantLeaf on GitHub
+
+"""
+
 from pathlib import Path
 import os
 import shutil
-import regex as re
+import re
 from tabulate import tabulate
-
-# Purpose: This program looks at the directory it is run in and then organizes the files found within the directory for the user into subdirectories
-# whose names are based on the file extension
-
-# Reason: The reason to develop this program was to become more familiar with Python as my experience is spotty and inconsistent
-
-# Author: VerdantLeaf on GitHub
 
 subdirs = []    # Array of all the names of the current subdirectories
 extensions = [] # Array to store all of the file extensions
@@ -36,7 +41,6 @@ for file_name in os.listdir(cwd):
 
         if ext not in extensions:
             extensions.append(ext)
-        
         try:
             files[ext].append(file_name)
         except KeyError:
@@ -63,9 +67,18 @@ for extension in extensions:
         try:
             shutil.copy(filepath, os.path.join(cwd, extension)) # Just copy things over for now
         except FileExistsError:
-            # Match with numbers between 1- inf amount of times
-            fmatch = re.search("\d+",FileExistsError.filename)
-            fn = file_name + '1' if ('0' < fchar < '9') else fchar
-                
+            # Search the file name for a number before the file extension
+            match = re.search(r"(\d+)(?=\.[^.]+$|$)",FileExistsError.filename)
+            if match:
+                num = match.group(1) + 1
+                fn = file_name + "-" + str(num)
+            # if there is no number
+            else:
+                fn = file_name + "-1"
 
-            continue
+            filepath = os.path.join(cwd, fn)
+            shutil.copy(filepath, os.path.join(cwd, extension))
+
+# Change this to a function to allow repeated copy attempts that increment the number
+# You can then change the number after getting a return indicating that it's failed
+#def try_copy(cwd, file_name, extension):
