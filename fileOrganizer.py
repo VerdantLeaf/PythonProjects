@@ -1,7 +1,15 @@
 from pathlib import Path
 import os
 import shutil
+import regex as re
 from tabulate import tabulate
+
+# Purpose: This program looks at the directory it is run in and then organizes the files found within the directory for the user into subdirectories
+# whose names are based on the file extension
+
+# Reason: The reason to develop this program was to become more familiar with Python as my experience is spotty and inconsistent
+
+# Author: VerdantLeaf on GitHub
 
 subdirs = []    # Array of all the names of the current subdirectories
 extensions = [] # Array to store all of the file extensions
@@ -9,9 +17,9 @@ files = {}
 
 cwd = Path.cwd()
 
-for dir in cwd.iterdir():
-    if dir.is_dir() and not dir.name.startswith('.'):
-        subdirs.append(dir.name)
+for directory in cwd.iterdir():
+    if directory.is_dir() and not directory.name.startswith('.'):
+        subdirs.append(directory.name)
 
 # Scan the current dir for all of the extensions
 for file_name in os.listdir(cwd):
@@ -47,13 +55,17 @@ if key != '':
 
 # # make the new directories
 for extension in extensions:
-    dir = Path(extension)
-    dir.mkdir(exist_ok= True)
+    directory = Path(extension)
+    directory.mkdir(exist_ok= True)
 
     for file_name in files[extension]:
         filepath = os.path.join(cwd, file_name)
         try:
             shutil.copy(filepath, os.path.join(cwd, extension)) # Just copy things over for now
         except FileExistsError:
-            # Handle the case when the file already exists - Remove or append # to file name?
+            # Match with numbers between 1- inf amount of times
+            fmatch = re.search("\d+",FileExistsError.filename)
+            fn = file_name + '1' if ('0' < fchar < '9') else fchar
+                
+
             continue
